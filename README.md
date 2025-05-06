@@ -8,7 +8,7 @@ atomicindependent/bank_account.go: sync/atomic.Bool + sync/atomic.Int64
 
 
 Benchmarks:
-
+```
 Sequential
 ----------
 Mutex          	    	86723455	        11.57 ns/op
@@ -24,3 +24,4 @@ RWMutex              	28465296	        44.31 ns/op
 AtomicInt64         	18870572	        62.08 ns/op
 AtomicValue         	 2381992	       510.4 ns/op
 AtomicIndependent    	26383873	        43.57 ns/op
+```
