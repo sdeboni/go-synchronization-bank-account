@@ -6,7 +6,16 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+  "account/atomicint64"
+  "account/atomicvalue"
+  "account/atomicindependent"
+  "account/lock"
+  "account/rw"
 )
+
+func Open(amount int64) *atomicindependent.Account {
+  return atomicindependent.Open(amount)
+}
 
 func TestSeqOpenBalanceClose(t *testing.T) {
 	// open account
@@ -307,28 +316,145 @@ func TestConcDeposit(t *testing.T) {
 // The interesting thing to try here is to experiment with the protections
 // and see how their implementation changes the results of the parallel
 // benchmark.
-func BenchmarkAccountOperations(b *testing.B) {
+func BenchmarkMutex(b *testing.B) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
-	a := Open(0)
+	a := lock.Open(0)
 	defer a.Close()
 	for n := 0; n < b.N; n++ {
 		a.Deposit(10)
 		a.Deposit(-10)
+    a.Balance()
 	}
 }
 
-func BenchmarkAccountOperationsParallel(b *testing.B) {
+func BenchmarkRWMutex(b *testing.B) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
 	}
-	a := Open(0)
+	a := rw.Open(0)
+	defer a.Close()
+	for n := 0; n < b.N; n++ {
+		a.Deposit(10)
+		a.Deposit(-10)
+    a.Balance()
+	}
+}
+
+
+func BenchmarkAtomicInt64(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicint64.Open(0)
+	defer a.Close()
+	for n := 0; n < b.N; n++ {
+		a.Deposit(10)
+		a.Deposit(-10)
+    a.Balance()
+	}
+}
+
+func BenchmarkAtomicValue(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicvalue.Open(0)
+	defer a.Close()
+	for n := 0; n < b.N; n++ {
+		a.Deposit(10)
+		a.Deposit(-10)
+    a.Balance()
+	}
+}
+
+func BenchmarkAtomicIndependent(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicindependent.Open(0)
+	defer a.Close()
+	for n := 0; n < b.N; n++ {
+		a.Deposit(10)
+		a.Deposit(-10)
+    a.Balance()
+	}
+}
+
+func BenchmarkParallelMutex(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := lock.Open(0)
 	defer a.Close()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			a.Deposit(10)
 			a.Deposit(-10)
+      a.Balance()
 		}
 	})
 }
+
+func BenchmarkParallelRWMutex(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := rw.Open(0)
+	defer a.Close()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			a.Deposit(10)
+			a.Deposit(-10)
+      a.Balance()
+		}
+	})
+}
+
+func BenchmarkParallelAtomicInt64(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicint64.Open(0)
+	defer a.Close()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			a.Deposit(10)
+			a.Deposit(-10)
+      a.Balance()
+		}
+	})
+}
+
+func BenchmarkParallelAtomicValue(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicvalue.Open(0)
+	defer a.Close()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			a.Deposit(10)
+			a.Deposit(-10)
+      a.Balance()
+		}
+	})
+}
+
+func BenchmarkParallelAtomicIndependent(b *testing.B) {
+	if testing.Short() {
+		b.Skip("skipping benchmark in short mode.")
+	}
+	a := atomicindependent.Open(0)
+	defer a.Close()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			a.Deposit(10)
+			a.Deposit(-10)
+      a.Balance()
+		}
+	})
+}
+
+

@@ -1,11 +1,11 @@
-package account
+package rw
 
 import "sync"
 
 type Account struct {
   balance int64
   isClosed bool
-  mu sync.Mutex
+  mu sync.RWMutex
 }
 
 func Open(amount int64) *Account {
@@ -19,8 +19,8 @@ func (a *Account) Balance() (int64, bool) {
   if a.isClosed {
     return 0, false
   }
-  a.mu.Lock()
-  defer a.mu.Unlock()
+  a.mu.RLock()
+  defer a.mu.RUnlock()
 
   if a.isClosed {
     return 0, false
