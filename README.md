@@ -1,10 +1,10 @@
 Testing performance differences synchronizing access to struct representing a bank account:
 
-lock/bank_account.go: sync.Mutex
-rw/bank_account.go  : sync.RWMutex 
-atomicint64/bank_account.go: sync/atomic.Int64 (state is encoded in 64 bits)
-atomicvalue/bank_account.go: sync/atomic.Value 
-atomicindependent/bank_account.go: sync/atomic.Bool + sync/atomic.Int64
+- lock/bank_account.go: sync.Mutex
+- rw/bank_account.go  : sync.RWMutex 
+- atomicint64/bank_account.go: sync/atomic.Int64 (state is encoded in 64 bits)
+- atomicvalue/bank_account.go: sync/atomic.Value 
+- atomicindependent/bank_account.go: sync/atomic.Bool + sync/atomic.Int64
 
 
 Benchmarks:
